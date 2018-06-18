@@ -1,0 +1,114 @@
+//Client
+#include "Window.h"
+#include"Board.h"
+#include"Coin.h"
+#include<process.h>
+#include<iostream>
+#include <thread>
+
+//Network Libraries
+
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#pragma comment(lib, "ws2_32.lib")
+#include<WinSock2.h>
+
+using namespace std;
+WSADATA wsaData;
+WORD dllversion;
+SOCKADDR_IN addr;
+int sizeofaddr;
+SOCKET Connection;
+int setp1x1;
+
+int sendp1x1;
+
+void net(void* param);
+void init();
+void SEND_RECEIVE();
+int main(int agrc, char**argv){
+	init();
+	Window window("Ludo", 920, 930);
+	Board board(window, 350, 350,255);
+	Coin coin(window, 100, 700,200, 700, 100, 780, 200, 780, 680, 100, 780, 100, 680, 200, 780, 200, 255);
+	while (!window.isClosed()) {
+			//system("cls");
+			window.clear();
+			board.draw();
+			coin.draw();
+			window.pollEvents();
+			board.pollEvent();
+			coin.pollEvent();
+			sendp1x1 = coin.Send_P1x1();
+			//coin.Set_P1x1(setp1x1);
+			//_beginthread(net, 0, NULL);
+			SEND_RECEIVE();
+			
+	}
+	return 0;
+}
+
+void net(void* param) {
+
+	Connection = socket(AF_INET, SOCK_STREAM, NULL);
+	if (connect(Connection, (SOCKADDR*)&addr, sizeofaddr) != 0) {
+		cerr << "Failed to Connect" << endl;
+		//return 0;
+		exit(1);
+	}
+	cout << "Connected" << endl;
+		//Send Values
+		//string SP2x1 = to_string(sendp1x1);
+		//char sendP1x1[4];
+		char sendP1x1[20] = "Welcome to Client!";
+		//strcpy_s(sendP1x1, SP1x1.c_str());
+		send(Connection, sendP1x1, sizeof(sendP1x1), NULL);
+
+
+		//Receive Values
+		//char recP1x1[20];
+		//recv(Connection, recP1x1, sizeof(recP1x1), NULL);
+
+		//string SP1x1(recP1x1);
+		//setp1x1 = atoi(SP1x1.c_str());
+		//cout << setp1x1 << endl;
+		//cout << recP1x1 << endl;
+}
+void init() {
+	dllversion = MAKEWORD(2, 1);
+	if (WSAStartup(dllversion, &wsaData) != 0) {
+		cerr << "WinSock startup FAILURE!" << endl;
+		//return 0;
+		exit(1);
+	}
+
+	sizeofaddr = sizeof(addr);
+	addr.sin_addr.S_un.S_addr = inet_addr("192.168.56.20");
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(54000);
+}
+void SEND_RECEIVE() {
+
+	Connection = socket(AF_INET, SOCK_STREAM, NULL);
+	if (connect(Connection, (SOCKADDR*)&addr, sizeofaddr) != 0) {
+		cerr << "Failed to Connect" << endl;
+		//return 0;
+		exit(1);
+	}
+	cout << "Connected" << endl;
+	//Send Values
+	//string SP2x1 = to_string(sendp1x1);
+	//char sendP1x1[4];
+	char sendP1x1[20] = "Welcome to Client!";
+	//strcpy_s(sendP1x1, SP1x1.c_str());
+	send(Connection, sendP1x1, sizeof(sendP1x1), NULL);
+
+
+	//Receive Values
+	//char recP1x1[20];
+	//recv(Connection, recP1x1, sizeof(recP1x1), NULL);
+
+	//string SP1x1(recP1x1);
+	//setp1x1 = atoi(SP1x1.c_str());
+	//cout << setp1x1 << endl;
+	//cout << recP1x1 << endl;
+}

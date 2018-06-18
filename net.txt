@@ -1,0 +1,25 @@
+int init() {
+	dllversion = MAKEWORD(2, 1);
+	if (WSAStartup(dllversion, &wsaData) != 0) {
+		MessageBoxA(NULL, "Winsock Startup failed!", "Error", MB_OK | MB_ICONERROR);
+		exit(1);
+	}
+	sizeofaddr = sizeof(addr);
+	addr.sin_addr.S_un.S_addr = inet_addr("192.168.56.20");
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(54000);
+
+	Connection = socket(AF_INET, SOCK_STREAM, NULL);
+
+	if (connect(Connection, (SOCKADDR*)&addr, sizeofaddr) != 0) {
+		cout << "Failed to Connect" << endl;
+		return 0;
+	}
+		cout << "Connected!" << endl;
+		recv(Connection, CR_x1, sizeof(CR_x1), NULL);
+		//recv(Connection, CR_y1, sizeof(CR_y1), NULL);
+		cout << CR_x1 << endl;
+		x_rec[0] = atoi(c_str());
+		y_rec[0] = atoi(CR_y1);
+		//cout << x_rec[0] << "	" << y_rec << endl;
+}
